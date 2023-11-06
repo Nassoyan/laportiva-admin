@@ -1,0 +1,29 @@
+/* eslint-disable react/jsx-no-target-blank */
+import React from 'react'
+import {useIntl} from 'react-intl'
+import {KTIcon} from '../../../../helpers'
+import {SidebarMenuItemWithSub} from './SidebarMenuItemWithSub'
+import {SidebarMenuItem} from './SidebarMenuItem'
+
+const SidebarMenuMain = () => {
+  const intl = useIntl()
+
+  return (
+    <>
+      <SidebarMenuItem
+        to='/products'
+        icon='element-11'
+        title="Products"
+        fontIcon='bi-app-indicator'
+      />
+      <SidebarMenuItem
+        to='/brands'
+        icon='element-11'
+        title="Brands"
+        fontIcon='bi-app-indicator'
+      />
+    </>
+  )
+}
+
+export {SidebarMenuMain}

@@ -1,0 +1,77 @@
+.branddel-popup {
+    width: 100%;
+    height: 100vh;
+    position: absolute;
+    top: 0;
+    left: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    z-index: 999;
+    -webkit-tap-highlight-color:transparent;
+    background: rgba(0,0,0,.4);
+    .branddel-popup-inner {
+        max-width: 400px;
+        width: 350px;
+        height: 250px;
+        background-color: white;
+        border-radius: 10px;
+        z-index: 9999;
+        box-shadow: rgba(64, 64, 69, 0.2) 20px 7px 99px 0px;
+        animation: animatedModel .1s ease-in;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+
+        .branddel-button-box {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+            .branddel-cancel {
+                border: none;
+                background: none;
+                border-radius: 3px;
+                transition: .3s;
+                &:hover {
+                    color: rgb(9, 208, 248);
+                    background: rgb(235, 245, 248);
+                }
+            }
+        }
+
+        >p {
+            margin-top: 45px;
+            color: grey;
+            font-weight: 400;
+        }
+
+        .branddel-warning {
+            margin-top: 20px;
+            width: 5em;
+            height: 5em;
+            border-radius: 50%;
+            border: 2px solid #ffc700;
+            z-index: 999;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            .icon {
+                font-size: 40px;
+                color: #ffc700;
+            }
+        }
+    }
+}
+
+@keyframes animatedModel {
+    0% {
+        opacity: .4;
+        transform: scale(.8);
+    }
+
+    100% {
+        opacity: 1;
+        transform: scale(1);
+    }
+}

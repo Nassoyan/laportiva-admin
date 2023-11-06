@@ -1,0 +1,64 @@
+.actions-td {
+    position: relative;
+
+    .actions-box {
+        will-change: transform;
+        max-width: 125px;
+        width: 125px;
+        height: 100px;
+        background-color: white;
+        color: rgb(116, 114, 114);
+        border-radius: 5px;
+        position: absolute;
+        z-index: 9;
+        right: 10px;
+        box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
+        justify-content: center;
+        padding: 0 8px;
+        animation: animatedModel .2s ease;
+        // transition: .3s;
+        >span {
+            text-align: left;
+            padding: 0 5px;
+            cursor: pointer;
+            &:hover {
+                background-color: aliceblue;
+            }
+        }
+   }
+}
+
+@keyframes animatedModel {
+    0%{
+        opacity: .3;
+        // top: 60px;
+        transform: scale(0.6);
+    }
+    100%{
+        opacity: 1;
+        // top: 55px;
+        transform: scale(1);
+
+    }
+}
+
+.table-responsive {
+    overflow-y: auto;
+    width: 100%;
+    height: 100%;
+}
+
+
+
+.brand-image-box {
+    width: 80px;
+    height: 80px;
+    .brand-image {
+        object-fit:cover;
+        width: 100%;
+        height: 100%;
+    }
+}
