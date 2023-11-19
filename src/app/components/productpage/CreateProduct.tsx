@@ -87,7 +87,7 @@ const CreateProduct: React.FC = () => {
             method: "POST",
             body: formData, 
           })
-          // .then((res) => res.ok && navigate("/products"));
+          .then((res) => res.ok && navigate("/products"));
         } catch (err) {
           console.error(err);
         }
