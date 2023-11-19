@@ -62,7 +62,7 @@ const CreateBrand: React.FC = () => {
             </div>
                 <form onSubmit={handleSubmit} style={{display:"flex", flexDirection:"column", gap:"15px"}} method="post" encType="multipart/form-data">
                 <div className="form-group">
-                        <label >Brand Name</label>
+                        <label >Brand Name*</label>
                         <input value={inputText} onChange={handleChange} type="text" className="form-control"  placeholder="Brands Name"/>
                     </div>
                     <div className="form-group">

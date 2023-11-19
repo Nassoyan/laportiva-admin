@@ -6,7 +6,8 @@ import Pagination from '../../components/productpage/Pagination';
 import { ProductsCustomRow } from '../../components/productpage/ProductCustomRow';
 import "../../../styles/products/productTable.scss"
 // import {KTIcon, toAbsoluteUrl} from '../../../_metronic/helpers'
-// import {getLayoutFromLocalStorage, ILayout, LayoutSetup} from '../../../_metronic/layout/core'
+// import {getLayoutFromLocalStorage, ILayout, LayoutSetup} from '../../../_metronic/layout/core'ber,
+
 
 interface Products {
     id:number;
@@ -21,34 +22,33 @@ interface Products {
 
 const ProductsPage: React.FC = () => {
     const [data, setData] = useState<Products[]>([])
-    const [currentPage, setCurrentPage] = useState(1);  
-    const [recordsPerPage] = useState(8);
+    const [totalPages, setTotalPages] = useState<number>(0) 
+    const [currentPage, setCurrentPage] = useState<number>(1) 
+    const [productsPerPage, setProductsPerPage] = useState(10)
 
-    const indexOfLastRecord = currentPage * recordsPerPage;
-    const indexOfFirstRecord = indexOfLastRecord - recordsPerPage;
-    const records = data?.slice(indexOfFirstRecord, indexOfLastRecord)
-    const npage = Math.ceil(data.length/recordsPerPage)
-    // console.log(records, "records");
-    // console.log(npage, "pages");
-    
-    
 
 
     useEffect(() => {
-        fetch("http://localhost:3000/products")
-            .then(res => res.json())
-            .then((res: Products[]) => setData(res))
-            .catch(err => console.error(err));
-    }, []);
+      console.log("second UseEffect");
+      
+      fetch(`http://localhost:3000/products?page=${currentPage}&size=${productsPerPage}`)
+        .then(req => req.json())
+        .then((res) => {
+          setTotalPages(res.totalPages)
+          setData(res.products);
+          setCurrentPage(res.currentPage)
+        });
+    }, [currentPage])
+    
 
     function removeProduct(id:number) {
       return fetch(`http://localhost:3000/products/${id}`, {
           method:"DELETE"
       })
           .then(() => {
-              return fetch("http://localhost:3000/products")
+              return fetch(`http://localhost:3000/products?page=${currentPage}&size=${productsPerPage}`)
               .then(res => res.json())
-              .then((res) => setData(res))
+              .then((res) => setData(res.products))
               .catch(err => console.error(err));
           })
   }
@@ -60,6 +60,10 @@ const ProductsPage: React.FC = () => {
               <div className='d-flex align-items-center gap-2 gap-lg-3 justify-content-end' style={{marginBottom:"10px"}}>
               <Link to='create' className='btn btn-sm fw-bold btn-primary'>Create Product</Link>
 
+              </div>
+              <div>
+                <label>Search</label>
+                <input type="text" />
               </div>
               <table
             id='kt_table_users'
@@ -86,8 +90,8 @@ const ProductsPage: React.FC = () => {
               </tr>
             </thead>
             <tbody className='text-gray-600 fw-bold'>
-              {records?.length ? (
-                records?.map((row:Products) => {
+              {data?.length ? (
+                data?.map((row:Products) => {
                   return <ProductsCustomRow removeProduct={removeProduct}  key={row.id} row={row} />
                 })
               ) : (
@@ -101,9 +105,12 @@ const ProductsPage: React.FC = () => {
               )}
             </tbody>
           </table>
-      <hr></hr>
       </div>
-          <Pagination setCurrentPage={setCurrentPage} currentPage={currentPage}  pageNumbers={npage} />
+          <Pagination 
+          currentPage={currentPage}
+          setCurrentPage={setCurrentPage}
+            totalPages={totalPages}
+           />
     </div>
   )
 }

@@ -10,7 +10,7 @@ import { BrandsCustomRow } from '../../components/brandpage/BrandCustomRow';
 import {KTCardBody} from '../../../_metronic/helpers'
 import "../../../styles/brandspage/customRow.scss"
 
-interface Brands {
+export interface Brands {
     id:number;
     name:string;
     image_url:string;
@@ -26,7 +26,7 @@ const BrandsPage: React.FC = () => {
 
 
     useEffect(() => {
-                fetch("http://localhost:3000/brands")
+                fetch("http://localhost:3000/brands",)
                     .then(res => res.json())
                     .then((res: Brands[]) => setData(res))
                     .catch(err => console.error(err));

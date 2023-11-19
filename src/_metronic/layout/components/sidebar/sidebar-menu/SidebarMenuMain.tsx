@@ -12,7 +12,7 @@ const SidebarMenuMain = () => {
     <>
       <SidebarMenuItem
         to='/products'
-        icon='element-11'
+        icon='element-2'
         title="Products"
         fontIcon='bi-app-indicator'
       />
