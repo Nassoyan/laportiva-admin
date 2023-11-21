@@ -1,12 +1,9 @@
-/* eslint-disable jsx-a11y/anchor-is-valid */
-// import clsx from 'clsx'
+
 import React, { ChangeEvent, useCallback, useEffect, useState } from 'react'
 import { Link } from 'react-router-dom';
 import Pagination from '../../components/productpage/Pagination';
 import { ProductsCustomRow } from '../../components/productpage/ProductCustomRow';
 import "../../../styles/products/productTable.scss"
-// import {KTIcon, toAbsoluteUrl} from '../../../_metronic/helpers'
-// import {getLayoutFromLocalStorage, ILayout, LayoutSetup} from '../../../_metronic/layout/core'ber,
 
 
 interface Products {
@@ -60,46 +57,23 @@ const ProductsPage: React.FC = () => {
       setSearchValue(e.target.value);
     }
 
-  useEffect(() => {
-  const handle = setTimeout(() => {
-    let url = `${URL}/products?page=${currentPage}&size=${productsPerPage}`
-if(searchValue) {
-url = `${URL}/products?search=${searchValue}`
-}
+      useEffect(() => {
+      const handle = setTimeout(() => {
+        let url = `${URL}/products?page=${currentPage}&size=${productsPerPage}`
+        if(searchValue) {
+        url = `${URL}/products?search=${searchValue}`
+        }
 
-fetch(url)
-.then(req => req.json())
-.then((res) => {
-setTotalPages(res.totalPages);
-setData(res.products);
-setCurrentPage(res.currentPage);
-})
-.catch(error => {
-console.error(error);
-});
-    // if (searchValue) {
-    //   fetch(`http://localhost:3000/products?search=${searchValue}`)
-    //     .then(req => req.json())
-    //     .then((res) => {
-    //       setTotalPages(res.totalPages);
-    //       setData(res.products);
-    //       setCurrentPage(res.currentPage);
-    //     })
-    //     .catch(error => {
-    //       console.error(error);
-    //     });
-    // } else {
-    //   fetch(`http://localhost:3000/products?page=${currentPage}&size=${productsPerPage}`)
-    //     .then(req => req.json())
-    //     .then((res) => {
-    //       setTotalPages(res.totalPages);
-    //       setData(res.products);
-    //       setCurrentPage(res.currentPage);
-    //     })
-    //     .catch(error => {
-    //       console.error(error);
-    //     });
-    // }
+        fetch(url)
+          .then(req => req.json())
+          .then((res) => {
+          setTotalPages(res.totalPages);
+          setData(res.products);
+          setCurrentPage(res.currentPage);
+        })
+        .catch(error => {
+        console.error(error);
+        });
   }, 1000);
   
   return () => {
