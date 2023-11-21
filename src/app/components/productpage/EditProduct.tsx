@@ -23,13 +23,15 @@ export default function EditProduct(): JSX.Element {
   const [btn, setBtn] = useState<boolean>(true);
   const { id } = useParams();
   const navigate = useNavigate()
+  const URL = process.env.REACT_APP_BASE_URL;
+
   
 
 
  
 
   useEffect(() => {
-    fetch(`http://localhost:3000/products/${id}`)
+    fetch(`${URL}/products/${id}`)
         .then(res => res.json())
         .then((res) => {
             
@@ -60,7 +62,7 @@ function handleChange(e) {
       
     e.preventDefault();
     try {
-      const response = await fetch(`http://localhost:3000/products/${id}`, {
+      const response = await fetch(`${URL}/products/${id}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
