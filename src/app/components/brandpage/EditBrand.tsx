@@ -17,6 +17,8 @@ export default function EditBrand(): JSX.Element {
   const [btn, setBtn] = useState<boolean>(true);
   const { id } = useParams();
   const navigate = useNavigate()
+  const URL = process.env.REACT_APP_BASE_URL;
+
 
 
   useEffect(() => {
@@ -28,7 +30,7 @@ export default function EditBrand(): JSX.Element {
   }, [inputText]);
 
   useEffect(() => {
-    fetch(`http://localhost:3000/brands/${id}`)
+    fetch(`${URL}/brands/${id}`)
         .then(res => res.json())
         .then((res) => {
             setInputText(res.name)

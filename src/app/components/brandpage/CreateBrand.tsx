@@ -16,6 +16,8 @@ const CreateBrand: React.FC = () => {
     const [inputText, setInputText] = useState('')
     const [brandImage, setBrandImage] = useState<any>()
     const [btn, setBtn] = useState<boolean>(true)
+    const URL = process.env.REACT_APP_BASE_URL;
+
 
     const navigate = useNavigate()
 
@@ -43,7 +45,7 @@ const CreateBrand: React.FC = () => {
         formData.append('image', brandImage);
         
     
-        return fetch('http://localhost:3000/brands', {
+        return fetch(`${URL}/brands`, {
             method: 'POST',
             body: formData,
         }).then(res => res.ok && navigate("/brands")) 

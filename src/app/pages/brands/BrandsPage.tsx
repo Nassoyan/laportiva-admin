@@ -21,20 +21,22 @@ export interface Brands {
 const BrandsPage: React.FC = () => {
 
     const [data, setData] = useState<Brands[]>()
+    const URL = process.env.REACT_APP_BASE_URL;
+
 
     useEffect(() => {
-                fetch("http://localhost:3000/brands",)
+                fetch(`${URL}/brands`,)
                     .then(res => res.json())
                     .then((res: Brands[]) => setData(res))
                     .catch(err => console.error(err));
             }, []);
     
     function removeBrand(id:number) {
-        return fetch(`http://localhost:3000/brands/${id}`, {
+        return fetch(`${URL}/brands/${id}`, {
             method:"DELETE"
         })
             .then(() => {
-                return fetch("http://localhost:3000/brands")
+                return fetch(`${URL}/brands`)
                 .then(res => res.json())
                 .then((res: Brands[]) => setData(res))
                 .catch(err => console.error(err));

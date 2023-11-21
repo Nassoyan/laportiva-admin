@@ -15,7 +15,7 @@ const buttonStyle = {
 
 const CreateProduct: React.FC = () => {
   const [brandData, setBrandData] = useState<Brands[]>()
-  const [defaultValue, setDefaultValue] = useState()
+  const URL = process.env.REACT_APP_BASE_URL;
 
     const [inputText, setInputText] = useState({
         name: "",
@@ -41,15 +41,11 @@ const CreateProduct: React.FC = () => {
       }, [inputText]);
 
       useEffect(() => {
-        fetch("http://localhost:3000/brands")
+        fetch(`${URL}/brands`)
                       .then(res => res.json())
                       .then((res: Brands[]) => setBrandData(res))
                       .catch(err => console.error(err));
       }, [])
-
-      
-
-     
 
     
       function handleChange(e: React.ChangeEvent<HTMLInputElement> | any) {
@@ -81,7 +77,7 @@ const CreateProduct: React.FC = () => {
         formData.append("product_images", inputText.product_images);
         
         try {
-          await fetch("http://localhost:3000/products", {
+          await fetch(`${URL}/products`, {
             method: "POST",
             body: formData, 
           })

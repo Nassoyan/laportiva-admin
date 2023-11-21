@@ -1,6 +1,6 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
 // import clsx from 'clsx'
-import React, { ChangeEvent, useCallback, useDeferredValue, useEffect, useState } from 'react'
+import React, { ChangeEvent, useCallback, useEffect, useState } from 'react'
 import { Link } from 'react-router-dom';
 import Pagination from '../../components/productpage/Pagination';
 import { ProductsCustomRow } from '../../components/productpage/ProductCustomRow';
@@ -26,9 +26,12 @@ const ProductsPage: React.FC = () => {
     const [currentPage, setCurrentPage] = useState<number>(1) 
     const [productsPerPage, setProductsPerPage] = useState(10)
     const [searchValue, setSearchValue] = useState("")
+    const URL = process.env.REACT_APP_BASE_URL;
+    console.log(process.env);
+    
 
     useEffect(() => {
-      fetch(`http://localhost:3000/products?page=${currentPage}&size=${productsPerPage}`)
+      fetch(`${URL}/products?page=${currentPage}&size=${productsPerPage}`)
         .then(req => req.json())
         .then((res) => {
           setTotalPages(res.totalPages)
@@ -39,11 +42,11 @@ const ProductsPage: React.FC = () => {
     
     const removeProductCallback = useCallback(
       (id: number) => {
-        return fetch(`http://localhost:3000/products/${id}`, {
+        return fetch(`${URL}/products/${id}`, {
           method: "DELETE"
         })
           .then(() => {
-            return fetch(`http://localhost:3000/products?page=${currentPage}&size=${productsPerPage}`)
+            return fetch(`${URL}/products?page=${currentPage}&size=${productsPerPage}`)
               .then((res) => res.json())
               .then((res) => setData(res.products))
               .catch((err) => console.error(err));
@@ -59,29 +62,44 @@ const ProductsPage: React.FC = () => {
 
   useEffect(() => {
   const handle = setTimeout(() => {
-    if (searchValue) {
-      fetch(`http://localhost:3000/products?search=${searchValue}`)
-        .then(req => req.json())
-        .then((res) => {
-          setTotalPages(res.totalPages);
-          setData(res.products);
-          setCurrentPage(res.currentPage);
-        })
-        .catch(error => {
-          console.error(error);
-        });
-    } else {
-      fetch(`http://localhost:3000/products?page=${currentPage}&size=${productsPerPage}`)
-        .then(req => req.json())
-        .then((res) => {
-          setTotalPages(res.totalPages);
-          setData(res.products);
-          setCurrentPage(res.currentPage);
-        })
-        .catch(error => {
-          console.error(error);
-        });
-    }
+    let url = `${URL}/products?page=${currentPage}&size=${productsPerPage}`
+if(searchValue) {
+url = `${URL}/products?search=${searchValue}`
+}
+
+fetch(url)
+.then(req => req.json())
+.then((res) => {
+setTotalPages(res.totalPages);
+setData(res.products);
+setCurrentPage(res.currentPage);
+})
+.catch(error => {
+console.error(error);
+});
+    // if (searchValue) {
+    //   fetch(`http://localhost:3000/products?search=${searchValue}`)
+    //     .then(req => req.json())
+    //     .then((res) => {
+    //       setTotalPages(res.totalPages);
+    //       setData(res.products);
+    //       setCurrentPage(res.currentPage);
+    //     })
+    //     .catch(error => {
+    //       console.error(error);
+    //     });
+    // } else {
+    //   fetch(`http://localhost:3000/products?page=${currentPage}&size=${productsPerPage}`)
+    //     .then(req => req.json())
+    //     .then((res) => {
+    //       setTotalPages(res.totalPages);
+    //       setData(res.products);
+    //       setCurrentPage(res.currentPage);
+    //     })
+    //     .catch(error => {
+    //       console.error(error);
+    //     });
+    // }
   }, 1000);
   
   return () => {
