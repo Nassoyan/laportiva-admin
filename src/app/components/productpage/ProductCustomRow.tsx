@@ -1,9 +1,7 @@
 // @ts-nocheck
 
-import { useState } from "react";
-import { FC } from "react"; // Don't forget to import FC from react
-import "../../../styles/createBrand/createBrand.scss";
-import BrandDelPopUp from "../brandpage/BrandDelPopUp";
+import { memo, useState } from "react";
+import { FC } from "react"; 
 import {useNavigate} from "react-router-dom"
 import ProductdDelPopUp from "./ProductDelPopUp";
 
@@ -24,7 +22,7 @@ const ProductsCustomRow: FC<Props> = ({ row, removeProduct }) => {
         <td>
           <b>{row.name}</b>
         </td>
-        <td><img width={60} height={60} alt="img" src={row.images[0].image_url} style={{objectFit:"cover"}} /></td>
+        <td><img width={60} height={60} alt="img" src={row.images[0].image_url} style={{objectFit:"cover", borderRadius:"5px"}} /></td>
         <td>
           {row.price}
         </td>
@@ -70,4 +68,6 @@ const ProductsCustomRow: FC<Props> = ({ row, removeProduct }) => {
   );
 };
 
-export { ProductsCustomRow };
+const MemoizedProductsCustomRow = memo(ProductsCustomRow);
+
+export { MemoizedProductsCustomRow as ProductsCustomRow };

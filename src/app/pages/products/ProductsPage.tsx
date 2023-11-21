@@ -1,6 +1,6 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
 // import clsx from 'clsx'
-import React, { useEffect, useState } from 'react'
+import React, { ChangeEvent, useCallback, useDeferredValue, useEffect, useState } from 'react'
 import { Link } from 'react-router-dom';
 import Pagination from '../../components/productpage/Pagination';
 import { ProductsCustomRow } from '../../components/productpage/ProductCustomRow';
@@ -25,12 +25,9 @@ const ProductsPage: React.FC = () => {
     const [totalPages, setTotalPages] = useState<number>(0) 
     const [currentPage, setCurrentPage] = useState<number>(1) 
     const [productsPerPage, setProductsPerPage] = useState(10)
-
-
+    const [searchValue, setSearchValue] = useState("")
 
     useEffect(() => {
-      console.log("second UseEffect");
-      
       fetch(`http://localhost:3000/products?page=${currentPage}&size=${productsPerPage}`)
         .then(req => req.json())
         .then((res) => {
@@ -40,18 +37,58 @@ const ProductsPage: React.FC = () => {
         });
     }, [currentPage])
     
-
-    function removeProduct(id:number) {
-      return fetch(`http://localhost:3000/products/${id}`, {
-          method:"DELETE"
-      })
+    const removeProductCallback = useCallback(
+      (id: number) => {
+        return fetch(`http://localhost:3000/products/${id}`, {
+          method: "DELETE"
+        })
           .then(() => {
-              return fetch(`http://localhost:3000/products?page=${currentPage}&size=${productsPerPage}`)
-              .then(res => res.json())
+            return fetch(`http://localhost:3000/products?page=${currentPage}&size=${productsPerPage}`)
+              .then((res) => res.json())
               .then((res) => setData(res.products))
-              .catch(err => console.error(err));
-          })
-  }
+              .catch((err) => console.error(err));
+          });
+      },
+      [currentPage, productsPerPage, setData] // Dependencies for useCallback
+    );
+
+
+     function handleChange(e:ChangeEvent<HTMLInputElement>) {
+      setSearchValue(e.target.value);
+    }
+
+  useEffect(() => {
+  const handle = setTimeout(() => {
+    if (searchValue) {
+      fetch(`http://localhost:3000/products?search=${searchValue}`)
+        .then(req => req.json())
+        .then((res) => {
+          setTotalPages(res.totalPages);
+          setData(res.products);
+          setCurrentPage(res.currentPage);
+        })
+        .catch(error => {
+          console.error(error);
+        });
+    } else {
+      fetch(`http://localhost:3000/products?page=${currentPage}&size=${productsPerPage}`)
+        .then(req => req.json())
+        .then((res) => {
+          setTotalPages(res.totalPages);
+          setData(res.products);
+          setCurrentPage(res.currentPage);
+        })
+        .catch(error => {
+          console.error(error);
+        });
+    }
+  }, 1000);
+  
+  return () => {
+    clearTimeout(handle);
+  };
+}, [searchValue, currentPage, productsPerPage]);
+
     
   return (
     <div className='products-table'>
@@ -61,9 +98,9 @@ const ProductsPage: React.FC = () => {
               <Link to='create' className='btn btn-sm fw-bold btn-primary'>Create Product</Link>
 
               </div>
-              <div>
+              <div className='search_products'>
                 <label>Search</label>
-                <input type="text" />
+                <input onChange={handleChange} value={searchValue} type="text" />
               </div>
               <table
             id='kt_table_users'
@@ -92,7 +129,7 @@ const ProductsPage: React.FC = () => {
             <tbody className='text-gray-600 fw-bold'>
               {data?.length ? (
                 data?.map((row:Products) => {
-                  return <ProductsCustomRow removeProduct={removeProduct}  key={row.id} row={row} />
+                  return <ProductsCustomRow removeProduct={removeProductCallback}  key={row.id} row={row} />
                 })
               ) : (
                 <tr>

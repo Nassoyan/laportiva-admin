@@ -1,8 +1,7 @@
 // @ts-nocheck
 
 import { useState } from "react";
-import { FC } from "react"; // Don't forget to import FC from react
-import "../../../styles/createBrand/createBrand.scss";
+import { FC } from "react"; 
 import BrandDelPopUp from "./BrandDelPopUp";
 import {useNavigate} from "react-router-dom"
 

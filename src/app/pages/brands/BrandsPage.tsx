@@ -18,12 +18,9 @@ export interface Brands {
     updatedAt: string;
 }
 
-
-
 const BrandsPage: React.FC = () => {
 
-     const [data, setData] = useState<Brands[]>()
-
+    const [data, setData] = useState<Brands[]>()
 
     useEffect(() => {
                 fetch("http://localhost:3000/brands",)
@@ -43,7 +40,6 @@ const BrandsPage: React.FC = () => {
                 .catch(err => console.error(err));
             })
     }
-
 
     return (
         <div className='table-responsive'>

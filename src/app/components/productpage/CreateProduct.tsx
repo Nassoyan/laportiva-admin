@@ -37,7 +37,6 @@ const CreateProduct: React.FC = () => {
         } else {
           setBtn(true);
         }
-        console.log("1useEffect");
         
       }, [inputText]);
 
@@ -55,7 +54,6 @@ const CreateProduct: React.FC = () => {
     
       function handleChange(e: React.ChangeEvent<HTMLInputElement> | any) {
         const { value, name } = e.target;
-        console.log(value, "vallll")
     
         if (e.target?.files) {
           setInputText((prev: any) => ({
