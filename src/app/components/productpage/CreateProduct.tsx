@@ -42,9 +42,9 @@ const CreateProduct: React.FC = () => {
 
       useEffect(() => {
         fetch(`${URL}/brands`)
-                      .then(res => res.json())
-                      .then((res: Brands[]) => setBrandData(res))
-                      .catch(err => console.error(err));
+          .then(res => res.json())
+          .then((res: Brands[]) => setBrandData(res))
+          .catch(err => console.error(err));
       }, [])
 
     
