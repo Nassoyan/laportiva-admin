@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link, useParams, useNavigate } from "react-router-dom";
+import { Brands } from "../../pages/brands/BrandsPage";
 
 const styles: React.CSSProperties = {
     display: "flex",
@@ -13,13 +14,14 @@ const styles: React.CSSProperties = {
   };
 
 export default function EditProduct(): JSX.Element {
-    const [inputValues, setInputValues] = useState({
-        name: "",
-        price: "",
-        artikul: "",
-        code: "",
-        brand_id: "",
-      });
+  const [inputValues, setInputValues] = useState({
+      name: "",
+      price: "",
+      artikul: "",
+      code: "",
+      brand_id: "",
+    });
+  const [brandData, setBrandData] = useState<Brands[]>()
   const [btn, setBtn] = useState<boolean>(true);
   const { id } = useParams();
   const navigate = useNavigate()
@@ -27,7 +29,13 @@ export default function EditProduct(): JSX.Element {
 
   
 
-
+  useEffect(() => {
+    fetch(`${URL}/brands`)
+      .then(req => req.json())
+      .then((res) => {
+        setBrandData(res);
+      });
+  }, [])
  
 
   useEffect(() => {
@@ -105,9 +113,17 @@ function handleChange(e) {
           <input onChange={handleChange} value={inputValues.code} name="code"  type="text" className="form-control" placeholder="Brands Name" />
         </div>
         <div className="form-group">
-          <label>Products Brand ID</label>
-          <input onChange={handleChange} value={inputValues.brand_id} name="brand_id"  type="text" className="form-control" placeholder="Brands Name" />
-        </div>
+            <label>Select Brand*</label>
+            <select name="brand_id" className="form-control" value={inputValues.brand_id} onChange={handleChange}>
+              <option value="" disabled>Select Brand </option>
+              {brandData?.map((brand) => {
+                return (
+                  <option  value={brand.id} key={brand.id}>{brand.name}</option>
+                );
+              })}
+            </select>
+          </div>
+
         <button disabled={btn} style={buttonStyle} type="submit" className="btn btn-primary">
           Save Changes
         </button>

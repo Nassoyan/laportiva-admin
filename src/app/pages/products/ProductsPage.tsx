@@ -6,6 +6,7 @@ import { ProductsCustomRow } from '../../components/productpage/ProductCustomRow
 import "../../../styles/products/productTable.scss"
 import { KTIcon } from '../../../_metronic/helpers';
 import { Brands } from '../brands/BrandsPage';
+import { getEnabledCategories } from 'trace_events';
 
 
 interface Products {
@@ -21,12 +22,18 @@ interface Products {
 
 const ProductsPage: React.FC = () => {
     const [data, setData] = useState<Products[]>([])
-    const [brands, setBrands] = useState<Brands[]>([])
+    const [brands, setBrands] = useState<Brands[]>([]);
+    const [catData, setCatData] = useState<any>([]);
+
     const [totalPages, setTotalPages] = useState<number>(0) 
     const [currentPage, setCurrentPage] = useState<number>(1) 
     const [productsPerPage, setProductsPerPage] = useState<number>(10)
     const [searchValue, setSearchValue] = useState<null | string>(null)
     const [brand, setBrand] = useState<string>("")
+    const [loading, setLoading] = useState<boolean>(false)
+    const [selectedCategories, setSelectedCategories] = useState<(number | null)[]>([]);
+
+
     const BASE_URL = process.env.REACT_APP_BASE_URL;
 
     function getProductsData() {
@@ -37,8 +44,12 @@ const ProductsPage: React.FC = () => {
       if(brand) {
         url.searchParams.append("brand_id", brand)
       }
+      if(selectedCategories.length) {
+        url.searchParams.append("categories", selectedCategories.join(","))
+      }
       return fetch(url.toString())
     }
+    console.log(selectedCategories, "selectedCategories");
     
 
     useEffect(() => {
@@ -48,17 +59,34 @@ const ProductsPage: React.FC = () => {
           setBrands(res);
         });
     }, [])
+
+    useEffect(() => {
+      fetch(`${BASE_URL}/category/categories-parents`)
+       .then((res) => res.json())
+        .then((res) => setCatData([res]))
+    }, [])
+
+    console.log("catDaTA ->", catData);
+    
     
 
     useEffect(() => {
       getProductsData()
         .then(req => req.json())
         .then((res) => {
-          setTotalPages(res.totalPages)
-          setData(res.products);
-          setCurrentPage(res.currentPage)
+          setLoading(true)
+          if(currentPage > res.totalPages){
+            setCurrentPage((res.totalPages - res.totalPages) + 1)
+            setTotalPages(res.totalPages)
+            setData(res.products);
+          } else {
+            setCurrentPage(res.currentPage)
+            setTotalPages(res.totalPages)
+            setData(res.products);
+          }
+          // setCurrentPage(res.currentPage)
         });
-    }, [currentPage, brand])
+    }, [currentPage, brand, selectedCategories])
 
     
     const removeProductCallback = useCallback(
@@ -87,9 +115,15 @@ const ProductsPage: React.FC = () => {
               getProductsData()
               .then(req => req.json())
               .then((res) => {
-                setTotalPages(res.totalPages);
-                setData(res.products);
-                setCurrentPage(res.currentPage);
+                if(currentPage > res.totalPages) { 
+                  setCurrentPage((res.totalPages - res.totalPages) + 1)
+                  setTotalPages(res.totalPages)
+                  setData(res.products);
+                } else {
+                  setTotalPages(res.totalPages);
+                  setData(res.products);
+                  setCurrentPage(res.currentPage);
+                }
             })
             .catch(error => {
             console.error(error);
@@ -101,6 +135,37 @@ const ProductsPage: React.FC = () => {
         clearTimeout(handle);
       };
     }, [searchValue]);
+
+    function handleCategoryClick(id:number,index:number) {
+      setSelectedCategories((prevs:any) => {
+        return [...prevs, id]
+      })
+      
+      let newCategoryArray:any[0] = [...catData];
+
+      if(!id) {
+        return fetch(`${BASE_URL}/category/categories-parents`)
+        .then((res) => res.json())
+         .then((res) => setCatData([res]))
+        } else {
+          return fetch(`${BASE_URL}/category/categories-children/${id}`)
+          .then((res) => res.json())
+          .then((res) => {
+              newCategoryArray[index]=[...res]
+              res.length ?  setCatData(newCategoryArray.slice(0,index+1)) : setCatData(newCategoryArray.slice(0, index));
+          }
+    )
+        
+        .catch((error) => {
+          console.error("Error fetching subcategories:", error);
+        });
+          
+        }
+  }
+
+  function getCategories() {
+    return fetch(``)
+  } 
 
     
   return (
@@ -138,6 +203,8 @@ const ProductsPage: React.FC = () => {
                     
                   </select>
 
+                     
+
                 </div>
 
                 <div className='d-flex align-items-center position-relative my-1' >
@@ -149,7 +216,32 @@ const ProductsPage: React.FC = () => {
                 </div>
 
               </div>
-              <table
+
+              <div style={{maxWidth:"200px"}}>
+                          {catData.map((i,index)=>{
+                              return(
+                                  <div key={index} className="form-control">
+                                      <select className="form-select"  
+                                      onChange={(e:any) => {
+                                              handleCategoryClick(e.target.value,index+1)
+                                          }}>
+                                              <option value="">Select Parent Category</option>
+                                              {i?.map((cat:any) => {
+                                                  return (
+                                                      <option  value={cat.id} key={cat.id}>
+                                                          {cat.name}
+                                                      </option>
+                                                  )
+                                              })}
+                                          </select>
+                                  </div>
+                              )
+                          })}
+                    </div>
+
+
+              {loading ? (
+                <table
                 id='kt_table_users'
                 className='table align-middle table-row-dashed fs-6 gy-5 dataTable no-footer'
               >
@@ -189,6 +281,8 @@ const ProductsPage: React.FC = () => {
                   )}
                 </tbody>
               </table>
+              ) : (<div>In process...</div>)}
+              
         </div>
           <Pagination 
           currentPage={currentPage}

@@ -22,6 +22,11 @@ const BrandsCustomRow: FC<Props> = ({ row, removeBrand }) => {
   const [popUp, setPopUp] = useState<boolean>(false)
   const navigate = useNavigate()
 
+  const createdAtValue = row.createdAt; 
+  const updatedAtValue = row.updatedAt; 
+  const createdAt = new Date(createdAtValue).toLocaleDateString();
+  const updatedAt = new Date(updatedAtValue).toLocaleDateString();
+
   return (
     <>
     <tr onClick={(e) => {
@@ -38,8 +43,8 @@ const BrandsCustomRow: FC<Props> = ({ row, removeBrand }) => {
             <img className="brand-image" src={row?.image_url} alt={"img"} />
           </div>
         </td>
-        <td>{row.createdAt}</td>
-        <td>{row.updatedAt}</td>
+        <td>{createdAt}</td>
+        <td>{updatedAt}</td>
         <td className="text-end min-w-100px actions-td">
           <a
             href="#"

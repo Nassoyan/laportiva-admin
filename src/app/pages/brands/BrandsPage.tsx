@@ -5,7 +5,6 @@ import { Link } from 'react-router-dom';
 
 // import {KTIcon, toAbsoluteUrl} from '../../../_metronic/helpers'
 // import {getLayoutFromLocalStorage, ILayout, LayoutSetup} from '../../../_metronic/layout/core'
-import BrandsTable from '../../components/brandpage/BrandsTable';
 import { BrandsCustomRow } from '../../components/brandpage/BrandCustomRow';
 import "../../../styles/brandspage/customRow.scss"
 
