@@ -163,9 +163,7 @@ const ProductsPage: React.FC = () => {
         }
   }
 
-  function getCategories() {
-    return fetch(``)
-  } 
+ 
 
     
   return (
@@ -208,7 +206,6 @@ const ProductsPage: React.FC = () => {
                 </div>
 
                 <div className='d-flex align-items-center position-relative my-1' >
-                  
                   <Link to='create' className=' d-flex align-items-center btn btn-sm fw-bold btn-primary  h-40px'>
                     <KTIcon iconName='plus' className='fs-2' />
                     Create Product
@@ -217,11 +214,10 @@ const ProductsPage: React.FC = () => {
 
               </div>
 
-              <div style={{maxWidth:"200px"}}>
                           {catData.map((i,index)=>{
                               return(
-                                  <div key={index} className="form-control">
-                                      <select className="form-select"  
+                                      <select className='form-select form-select-solid me-2'  
+                                      style={{ marginLeft: '5px', backgroundColor:"#f3f3f3", cursor:"pointer"}}
                                       onChange={(e:any) => {
                                               handleCategoryClick(e.target.value,index+1)
                                           }}>
@@ -234,10 +230,8 @@ const ProductsPage: React.FC = () => {
                                                   )
                                               })}
                                           </select>
-                                  </div>
                               )
                           })}
-                    </div>
 
 
               {loading ? (

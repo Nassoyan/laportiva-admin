@@ -86,7 +86,7 @@ const CreateCategory: React.FC = () => {
                     </button>
             </div>
                 <form onSubmit={handleSubmit} style={{display:"flex", flexDirection:"column", gap:"15px"}} method="post" encType="multipart/form-data">
-                    <div className="create_category_container">
+                    {/* <div className="create_category_container">
                         {catData.map((i,index)=>{
                             return(
                                 <div key={index} className="form-control">
@@ -108,7 +108,7 @@ const CreateCategory: React.FC = () => {
                                  </div>
                             )
                         })}
-                    </div>
+                    </div> */}
               
                 <div className="form-group">
                         <label >Category Name*</label>

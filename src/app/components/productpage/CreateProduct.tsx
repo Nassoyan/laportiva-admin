@@ -175,11 +175,11 @@ console.log("parentData ->", catData);
                 
                 <div className="form-group">
                   <label>Category*</label>
-                    <div className="form-control">
-                      <div className="create_category_container">
+                    {/* <div className="form-control"> */}
+                      {/* <div className="create_category_container"> */}
                           {catData.map((i,index)=>{
                               return(
-                                  <div key={index} className="form-control">
+                                  // <div key={index} className="form-control">
                                       <select className="form-select"  
                                       onChange={(e:any) => {
                                               handleCategoryClick(e.target.value,index+1)
@@ -193,11 +193,11 @@ console.log("parentData ->", catData);
                                                   )
                                               })}
                                           </select>
-                                  </div>
+                                  // </div>
                               )
                           })}
-                      </div>
-                    </div>
+                      {/* </div> */}
+                    {/* </div> */}
                 </div>
                 <div className="form-group">
                   <label>Product Image*</label>
