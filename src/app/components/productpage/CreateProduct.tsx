@@ -14,7 +14,11 @@ const buttonStyle = {
 }
 
 const CreateProduct: React.FC = () => {
-  const [brandData, setBrandData] = useState<Brands[]>()
+  const [brandData, setBrandData] = useState<Brands[]>();
+  const [catData, setCatData] = useState<any>([]);
+  const [selectedCategories, setSelectedCategories] = useState<(number | null)[]>([]);
+console.log(selectedCategories, "selectedCategories");
+
   const URL = process.env.REACT_APP_BASE_URL;
 
     const [inputText, setInputText] = useState({
@@ -23,14 +27,12 @@ const CreateProduct: React.FC = () => {
         artikul: "",
         code: "",
         brand_id: "Select Brand",
-        product_images: "", // initialize to null
+        product_images: "", 
       });
       const [btn, setBtn] = useState(true);
       const navigate = useNavigate()
     
       useEffect(() => {
-        
-
         const { name, price, artikul, code, brand_id, product_images } = inputText;
         if (name && price && artikul && code && brand_id && product_images) {
           setBtn(false);
@@ -42,10 +44,44 @@ const CreateProduct: React.FC = () => {
 
       useEffect(() => {
         fetch(`${URL}/brands`)
-                      .then(res => res.json())
-                      .then((res: Brands[]) => setBrandData(res))
-                      .catch(err => console.error(err));
+          .then(res => res.json())
+          .then((res: Brands[]) => setBrandData(res))
+          .catch(err => console.error(err));
       }, [])
+
+      useEffect(() => {
+        fetch(`${URL}/category/categories-parents`)
+         .then((res) => res.json())
+          .then((res) => setCatData([res]))
+      }, [])
+console.log("parentData ->", catData);
+
+      function handleCategoryClick(id:number,index:number) {
+        setSelectedCategories((prevs:any) => {
+          return [...prevs, id]
+        })
+        
+        let newCategoryArray:any[0] = [...catData];
+
+        if(!id) {
+          return fetch(`${URL}/category/categories-parents`)
+          .then((res) => res.json())
+           .then((res) => setCatData([res]))
+          } else {
+            return fetch(`${URL}/category/categories-children/${id}`)
+            .then((res) => res.json())
+            .then((res) => {
+                newCategoryArray[index]=[...res]
+                res.length ?  setCatData(newCategoryArray.slice(0,index+1)) : setCatData(newCategoryArray.slice(0, index));
+            }
+      )
+          
+          .catch((error) => {
+            console.error("Error fetching subcategories:", error);
+          });
+            
+          }
+    }
 
     
       function handleChange(e: React.ChangeEvent<HTMLInputElement> | any) {
@@ -54,7 +90,7 @@ const CreateProduct: React.FC = () => {
         if (e.target?.files) {
           setInputText((prev: any) => ({
             ...prev,
-            product_images: e.target.files[0], // set the file itself
+            product_images: e.target.files[0], 
           }));
         } else {
           setInputText((prev: any) => ({
@@ -64,31 +100,36 @@ const CreateProduct: React.FC = () => {
         }
       }
 
-    
       async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
-        e.preventDefault();
-    
-        const formData = new FormData();
-        formData.append("name", inputText.name);
-        formData.append("price", inputText.price);
-        formData.append("artikul", inputText.artikul);
-        formData.append("code", inputText.code);
-        formData.append("brand_id", inputText.brand_id);
-        formData.append("product_images", inputText.product_images);
-        
-        try {
-          await fetch(`${URL}/products`, {
+    e.preventDefault();
+
+    const formData = new FormData();
+    formData.append("name", inputText.name);
+    formData.append("price", inputText.price);
+    formData.append("artikul", inputText.artikul);
+    formData.append("code", inputText.code);
+    formData.append("brand_id", inputText.brand_id);
+    formData.append("product_images", inputText.product_images);
+
+    const categoryIdsJson = JSON.stringify(selectedCategories.filter(id => id !== null));
+    formData.append("category_ids", categoryIdsJson);
+
+    try {
+        const response = await fetch(`${URL}/products`, {
             method: "POST",
             body: formData, 
-          })
-          .then((res) => res.ok && navigate("/products"));
-        } catch (err) {
-          console.error(err);
-        }
-      }
-    
+        });
 
-    
+        if (response.ok) {
+            navigate("/products");
+        } else {
+            console.error('Server error:', response.status);
+        }
+    } catch (err) {
+        console.error('Network error:', err);
+    }
+}
+
 
     return (
         <div>
@@ -121,7 +162,7 @@ const CreateProduct: React.FC = () => {
                 </div>
 
                 <div className="form-group">
-                  <label>Brand ID*</label>
+                  <label>Brand*</label>
                   <select name="brand_id" className="form-control" value={inputText.brand_id} onChange={handleChange}>
                     <option value="Select Brand" disabled>Select Brand</option>
                     {brandData?.map((brand) => {
@@ -133,11 +174,35 @@ const CreateProduct: React.FC = () => {
                 </div>
                 
                 <div className="form-group">
+                  <label>Category*</label>
+                    {/* <div className="form-control"> */}
+                      {/* <div className="create_category_container"> */}
+                          {catData.map((i,index)=>{
+                              return(
+                                  // <div key={index} className="form-control">
+                                      <select className="form-select"  
+                                      onChange={(e:any) => {
+                                              handleCategoryClick(e.target.value,index+1)
+                                          }}>
+                                              <option value="">Select Parent Category</option>
+                                              {i?.map((cat:any) => {
+                                                  return (
+                                                      <option  value={cat.id} key={cat.id}>
+                                                          {cat.name}
+                                                      </option>
+                                                  )
+                                              })}
+                                          </select>
+                                  // </div>
+                              )
+                          })}
+                      {/* </div> */}
+                    {/* </div> */}
+                </div>
+                <div className="form-group">
                   <label>Product Image*</label>
                   <input name="product_images"  onChange={handleChange} type="file" className="form-control" />
                 </div>
-
-
                 <button disabled={btn} style={buttonStyle} type="submit" className="btn btn-primary">Save</button>
                 </form>
         </div>

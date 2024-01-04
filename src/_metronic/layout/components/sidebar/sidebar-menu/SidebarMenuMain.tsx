@@ -22,6 +22,18 @@ const SidebarMenuMain = () => {
         title="Brands"
         fontIcon='bi-app-indicator'
       />
+      <SidebarMenuItem
+        to='/category'
+        icon='element-4'
+        title="Category"
+        fontIcon='bi-app-indicator'
+      />
+      <SidebarMenuItem
+        to='/relation'
+        icon='element-5'
+        title="Relation"
+        fontIcon='bi-app-indicator'
+      />
     </>
   )
 }

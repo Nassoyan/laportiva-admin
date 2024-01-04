@@ -9,9 +9,13 @@ import ProductdDelPopUp from "./ProductDelPopUp";
 
 
 const ProductsCustomRow: FC<Props> = ({ row, removeProduct }) => {
-  const [actions, setActions] = useState(false); // useState should be inside {}
+  const [actions, setActions] = useState(false);
   const [popUp, setPopUp] = useState<boolean>(false)
   const navigate = useNavigate()
+  const createdAtValue = row.createdAt; 
+  const updatedAtValue = row.updatedAt; 
+  const createdAt = new Date(createdAtValue).toLocaleDateString();
+  const updatedAt = new Date(updatedAtValue).toLocaleDateString();
 
   return (
     <>
@@ -22,15 +26,15 @@ const ProductsCustomRow: FC<Props> = ({ row, removeProduct }) => {
         <td>
           <b>{row.name}</b>
         </td>
-        <td><img width={60} height={60} alt="img" src={row.images[0].image_url} style={{objectFit:"cover", borderRadius:"5px"}} /></td>
+        <td><img width={60} height={60} alt="img" src={row?.images[0]?.image_url} style={{objectFit:"cover", borderRadius:"5px"}} /></td>
         <td>
           {row.price}
         </td>
         <td>{row.artikul}</td>
         <td>{row.code}</td>
         <td>{row.brand_id}</td>
-        <td>{row.createdAt}</td>
-        <td>{row.updatedAt}</td>
+        <td>{createdAt}</td>
+        <td>{updatedAt}</td>
         <td className="text-end min-w-100px actions-td">
           <a
             href="#"

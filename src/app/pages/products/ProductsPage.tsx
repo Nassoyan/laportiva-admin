@@ -1,12 +1,12 @@
-/* eslint-disable jsx-a11y/anchor-is-valid */
-// import clsx from 'clsx'
+
 import React, { ChangeEvent, useCallback, useEffect, useState } from 'react'
 import { Link } from 'react-router-dom';
 import Pagination from '../../components/productpage/Pagination';
 import { ProductsCustomRow } from '../../components/productpage/ProductCustomRow';
 import "../../../styles/products/productTable.scss"
-// import {KTIcon, toAbsoluteUrl} from '../../../_metronic/helpers'
-// import {getLayoutFromLocalStorage, ILayout, LayoutSetup} from '../../../_metronic/layout/core'ber,
+import { KTIcon } from '../../../_metronic/helpers';
+import { Brands } from '../brands/BrandsPage';
+import { getEnabledCategories } from 'trace_events';
 
 
 interface Products {
@@ -22,37 +22,86 @@ interface Products {
 
 const ProductsPage: React.FC = () => {
     const [data, setData] = useState<Products[]>([])
+    const [brands, setBrands] = useState<Brands[]>([]);
+    const [catData, setCatData] = useState<any>([]);
+
     const [totalPages, setTotalPages] = useState<number>(0) 
     const [currentPage, setCurrentPage] = useState<number>(1) 
-    const [productsPerPage, setProductsPerPage] = useState(10)
-    const [searchValue, setSearchValue] = useState("")
-    const URL = process.env.REACT_APP_BASE_URL;
-    console.log(process.env);
+    const [productsPerPage, setProductsPerPage] = useState<number>(10)
+    const [searchValue, setSearchValue] = useState<null | string>(null)
+    const [brand, setBrand] = useState<string>("")
+    const [loading, setLoading] = useState<boolean>(false)
+    const [selectedCategories, setSelectedCategories] = useState<(number | null)[]>([]);
+
+
+    const BASE_URL = process.env.REACT_APP_BASE_URL;
+
+    function getProductsData() {
+      let url =  new URL(`${BASE_URL}/products?page=${currentPage}&size=${productsPerPage}`)
+      if(searchValue) {
+        url.searchParams.append("search", searchValue)
+      }
+      if(brand) {
+        url.searchParams.append("brand_id", brand)
+      }
+      if(selectedCategories.length) {
+        url.searchParams.append("categories", selectedCategories.join(","))
+      }
+      return fetch(url.toString())
+    }
+    console.log(selectedCategories, "selectedCategories");
     
 
     useEffect(() => {
-      fetch(`${URL}/products?page=${currentPage}&size=${productsPerPage}`)
+      fetch(`${BASE_URL}/brands`)
         .then(req => req.json())
         .then((res) => {
-          setTotalPages(res.totalPages)
-          setData(res.products);
-          setCurrentPage(res.currentPage)
+          setBrands(res);
         });
-    }, [currentPage])
+    }, [])
+
+    useEffect(() => {
+      fetch(`${BASE_URL}/category/categories-parents`)
+       .then((res) => res.json())
+        .then((res) => setCatData([res]))
+    }, [])
+
+    console.log("catDaTA ->", catData);
+    
+    
+
+    useEffect(() => {
+      getProductsData()
+        .then(req => req.json())
+        .then((res) => {
+          setLoading(true)
+          if(currentPage > res.totalPages){
+            setCurrentPage((res.totalPages - res.totalPages) + 1)
+            setTotalPages(res.totalPages)
+            setData(res.products);
+          } else {
+            setCurrentPage(res.currentPage)
+            setTotalPages(res.totalPages)
+            setData(res.products);
+          }
+          // setCurrentPage(res.currentPage)
+        });
+    }, [currentPage, brand, selectedCategories])
+
     
     const removeProductCallback = useCallback(
       (id: number) => {
-        return fetch(`${URL}/products/${id}`, {
+        return fetch(`${BASE_URL}/products/${id}`, {
           method: "DELETE"
         })
           .then(() => {
-            return fetch(`${URL}/products?page=${currentPage}&size=${productsPerPage}`)
+            return getProductsData()
               .then((res) => res.json())
               .then((res) => setData(res.products))
               .catch((err) => console.error(err));
           });
       },
-      [currentPage, productsPerPage, setData] // Dependencies for useCallback
+      [currentPage, productsPerPage, setData]
     );
 
 
@@ -60,107 +109,175 @@ const ProductsPage: React.FC = () => {
       setSearchValue(e.target.value);
     }
 
-  useEffect(() => {
-  const handle = setTimeout(() => {
-    let url = `${URL}/products?page=${currentPage}&size=${productsPerPage}`
-if(searchValue) {
-url = `${URL}/products?search=${searchValue}`
-}
+      useEffect(() => {
+        const handle = setTimeout(() => {
+          if(searchValue !== null) {
+              getProductsData()
+              .then(req => req.json())
+              .then((res) => {
+                if(currentPage > res.totalPages) { 
+                  setCurrentPage((res.totalPages - res.totalPages) + 1)
+                  setTotalPages(res.totalPages)
+                  setData(res.products);
+                } else {
+                  setTotalPages(res.totalPages);
+                  setData(res.products);
+                  setCurrentPage(res.currentPage);
+                }
+            })
+            .catch(error => {
+            console.error(error);
+            });
+          }
+      }, 1000);
+    
+      return () => {
+        clearTimeout(handle);
+      };
+    }, [searchValue]);
 
-fetch(url)
-.then(req => req.json())
-.then((res) => {
-setTotalPages(res.totalPages);
-setData(res.products);
-setCurrentPage(res.currentPage);
-})
-.catch(error => {
-console.error(error);
-});
-    // if (searchValue) {
-    //   fetch(`http://localhost:3000/products?search=${searchValue}`)
-    //     .then(req => req.json())
-    //     .then((res) => {
-    //       setTotalPages(res.totalPages);
-    //       setData(res.products);
-    //       setCurrentPage(res.currentPage);
-    //     })
-    //     .catch(error => {
-    //       console.error(error);
-    //     });
-    // } else {
-    //   fetch(`http://localhost:3000/products?page=${currentPage}&size=${productsPerPage}`)
-    //     .then(req => req.json())
-    //     .then((res) => {
-    //       setTotalPages(res.totalPages);
-    //       setData(res.products);
-    //       setCurrentPage(res.currentPage);
-    //     })
-    //     .catch(error => {
-    //       console.error(error);
-    //     });
-    // }
-  }, 1000);
-  
-  return () => {
-    clearTimeout(handle);
-  };
-}, [searchValue, currentPage, productsPerPage]);
+    function handleCategoryClick(id:number,index:number) {
+      setSelectedCategories((prevs:any) => {
+        return [...prevs, id]
+      })
+      
+      let newCategoryArray:any[0] = [...catData];
+
+      if(!id) {
+        return fetch(`${BASE_URL}/category/categories-parents`)
+        .then((res) => res.json())
+         .then((res) => setCatData([res]))
+        } else {
+          return fetch(`${BASE_URL}/category/categories-children/${id}`)
+          .then((res) => res.json())
+          .then((res) => {
+              newCategoryArray[index]=[...res]
+              res.length ?  setCatData(newCategoryArray.slice(0,index+1)) : setCatData(newCategoryArray.slice(0, index));
+          }
+    )
+        
+        .catch((error) => {
+          console.error("Error fetching subcategories:", error);
+        });
+          
+        }
+  }
+
+ 
 
     
   return (
     <div className='products-table'>
       <div className='table-responsive'>
               <h2>Products</h2>
-              <div className='d-flex align-items-center gap-2 gap-lg-3 justify-content-end' style={{marginBottom:"10px"}}>
-              <Link to='create' className='btn btn-sm fw-bold btn-primary'>Create Product</Link>
+              <div className='d-flex align-items-center gap-2 gap-lg-3 justify-content-between' style={{marginBottom:"10px"}}>
+
+                <div className='d-flex align-items-center position-relative my-1'>
+                  <KTIcon iconName='magnifier' className='fs-1 position-absolute ms-6' />
+                  <input
+                    style={{backgroundColor:"#f3f3f3"}}
+                    type='text'
+                    data-kt-user-table-filter='search'
+                    className='form-control form-control-solid  ps-14'
+                    placeholder='Search product'
+                    onChange={handleChange}
+                    value={searchValue || ""}
+                  />
+
+                  <select
+                    value={brand}
+                    className='form-select form-select-solid me-2'
+                    style={{ marginLeft: '5px', backgroundColor:"#f3f3f3", cursor:"pointer"}}
+                     onChange={(e) => {
+                      setBrand(e.target.value)
+                     }}
+                  >
+                    <option value="" >All Brands</option>
+                    {brands?.map((brand) => {
+                      return (
+                        <option  value={brand.id} key={brand.id}>{brand.name}</option>
+                      );
+                    })}
+                    
+                  </select>
+
+                     
+
+                </div>
+
+                <div className='d-flex align-items-center position-relative my-1' >
+                  <Link to='create' className=' d-flex align-items-center btn btn-sm fw-bold btn-primary  h-40px'>
+                    <KTIcon iconName='plus' className='fs-2' />
+                    Create Product
+                  </Link>
+                </div>
 
               </div>
-              <div className='search_products'>
-                <label>Search</label>
-                <input onChange={handleChange} value={searchValue} type="text" />
-              </div>
-              <table
-            id='kt_table_users'
-            className='table align-middle table-row-dashed fs-6 gy-5 dataTable no-footer'
-          >
-            <thead>
-              <tr className='text-start text-muted fw-bolder fs-7 text-uppercase gs-0'>
-                  <th></th>
-                <th className='min-w-125px'>Id</th>
-                <th className='min-w-125px'>Name</th>
-                <th className='min-w-125px'>Image</th>
-                <th className='min-w-125px'>Price</th>
-                <th className='min-w-125px'>Artikul</th>
-                <th className='min-w-125px'>Code</th>
-                <th className='min-w-125px'>Brand ID</th>
-                <th className='min-w-125px'>CreatedAt</th>
-                <th className='min-w-125px'>UpdatedAt</th>
-                <th style={{
-                    display: "flex",
-                    justifyContent: "center"
-                    }} 
-                    className='min-w-100px'>Actions</th>
-                    <th></th>
-              </tr>
-            </thead>
-            <tbody className='text-gray-600 fw-bold'>
-              {data?.length ? (
-                data?.map((row:Products) => {
-                  return <ProductsCustomRow removeProduct={removeProductCallback}  key={row.id} row={row} />
-                })
-              ) : (
-                <tr>
-                  <td colSpan={7}>
-                    <div className='d-flex text-center w-100 align-content-center justify-content-center'>
-                      No matching records found
-                    </div>
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
-      </div>
+
+                          {catData.map((i,index)=>{
+                              return(
+                                      <select className='form-select form-select-solid me-2'  
+                                      style={{ marginLeft: '5px', backgroundColor:"#f3f3f3", cursor:"pointer"}}
+                                      onChange={(e:any) => {
+                                              handleCategoryClick(e.target.value,index+1)
+                                          }}>
+                                              <option value="">Select Parent Category</option>
+                                              {i?.map((cat:any) => {
+                                                  return (
+                                                      <option  value={cat.id} key={cat.id}>
+                                                          {cat.name}
+                                                      </option>
+                                                  )
+                                              })}
+                                          </select>
+                              )
+                          })}
+
+
+              {loading ? (
+                <table
+                id='kt_table_users'
+                className='table align-middle table-row-dashed fs-6 gy-5 dataTable no-footer'
+              >
+                <thead>
+                  <tr className='text-start text-muted fw-bolder fs-7 text-uppercase gs-0'>
+                      <th></th>
+                    <th className='min-w-125px'>Id</th>
+                    <th className='min-w-125px'>Name</th>
+                    <th className='min-w-125px'>Image</th>
+                    <th className='min-w-125px'>Price</th>
+                    <th className='min-w-125px'>Artikul</th>
+                    <th className='min-w-125px'>Code</th>
+                    <th className='min-w-125px'>Brand</th>
+                    <th className='min-w-125px'>CreatedAt</th>
+                    <th className='min-w-125px'>UpdatedAt</th>
+                    <th style={{
+                        display: "flex",
+                        justifyContent: "center"
+                        }} 
+                        className='min-w-100px'>Actions</th>
+                        <th></th>
+                  </tr>
+                </thead>
+                <tbody className='text-gray-600 fw-bold'>
+                  {data?.length ? (
+                    data?.map((row:Products) => {
+                      return <ProductsCustomRow removeProduct={removeProductCallback}  key={row.id} row={row} />
+                    })
+                  ) : (
+                    <tr>
+                      <td colSpan={7}>
+                        <div className='d-flex text-center w-100 align-content-center justify-content-center'>
+                          No matching records found
+                        </div>
+                      </td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
+              ) : (<div>In process...</div>)}
+              
+        </div>
           <Pagination 
           currentPage={currentPage}
           setCurrentPage={setCurrentPage}
