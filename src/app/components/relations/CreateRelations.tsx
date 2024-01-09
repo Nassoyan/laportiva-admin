@@ -119,7 +119,7 @@ const CreateRelations: React.FC = () => {
             <div style={styles}>
                 <h2>Create Category and Sub categories</h2>
                 <button type="button" className="btn btn-link">
-                    <Link to='/category'>Go back</Link>
+                    <Link to='/relation'>Go back</Link>
                     </button>
             </div>
                 <form onSubmit={handleSubmit} style={{display:"flex", flexDirection:"column", gap:"15px"}} method="post" encType="multipart/form-data">

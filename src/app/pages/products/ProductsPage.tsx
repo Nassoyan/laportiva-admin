@@ -6,7 +6,9 @@ import { ProductsCustomRow } from '../../components/productpage/ProductCustomRow
 import "../../../styles/products/productTable.scss"
 import { KTIcon } from '../../../_metronic/helpers';
 import { Brands } from '../brands/BrandsPage';
-import { getEnabledCategories } from 'trace_events';
+import clsx from "clsx";
+import {Dropdown1} from "../../../_metronic/partials";
+import {useLayout} from "../../../_metronic/layout/core";
 
 
 interface Products {
@@ -21,9 +23,14 @@ interface Products {
 }
 
 const ProductsPage: React.FC = () => {
+    const {config} = useLayout()
     const [data, setData] = useState<Products[]>([])
     const [brands, setBrands] = useState<Brands[]>([]);
     const [catData, setCatData] = useState<any>([]);
+
+    const daterangepickerButtonClass = config.app?.toolbar?.fixed?.desktop
+        ? 'btn-light'
+        : 'bg-body btn-color-gray-700 btn-active-color-primary'
 
     const [totalPages, setTotalPages] = useState<number>(0) 
     const [currentPage, setCurrentPage] = useState<number>(1) 
@@ -65,10 +72,6 @@ const ProductsPage: React.FC = () => {
        .then((res) => res.json())
         .then((res) => setCatData([res]))
     }, [])
-
-    console.log("catDaTA ->", catData);
-    
-    
 
     useEffect(() => {
       getProductsData()
@@ -138,7 +141,11 @@ const ProductsPage: React.FC = () => {
 
     function handleCategoryClick(id:number,index:number) {
       setSelectedCategories((prevs:any) => {
-        return [...prevs, id]
+          if (index <= prevs.length) {
+              prevs[index-1] = id;
+              return prevs.slice(0, index);
+          }
+        return [...prevs, id].filter(Boolean)
       })
       
       let newCategoryArray:any[0] = [...catData];
@@ -200,38 +207,31 @@ const ProductsPage: React.FC = () => {
                     })}
                     
                   </select>
-
-                     
-
+                    <div>
+                        <a
+                            href='#'
+                            className={clsx('btn btn-sm btn-flex fw-bold', daterangepickerButtonClass)}
+                            data-kt-menu-trigger='click'
+                            data-kt-menu-placement='bottom-end'
+                        >
+                            <KTIcon iconName='filter' className='fs-6 text-muted me-1' />
+                            Filter By Category
+                        </a>
+                        <Dropdown1 catData={catData} handleCategoryClick={handleCategoryClick} />
+                    </div>
                 </div>
 
-                <div className='d-flex align-items-center position-relative my-1' >
+
+                  <div className='d-flex align-items-center position-relative my-1' >
                   <Link to='create' className=' d-flex align-items-center btn btn-sm fw-bold btn-primary  h-40px'>
                     <KTIcon iconName='plus' className='fs-2' />
                     Create Product
                   </Link>
                 </div>
-
               </div>
 
-                          {catData.map((i,index)=>{
-                              return(
-                                      <select className='form-select form-select-solid me-2'  
-                                      style={{ marginLeft: '5px', backgroundColor:"#f3f3f3", cursor:"pointer"}}
-                                      onChange={(e:any) => {
-                                              handleCategoryClick(e.target.value,index+1)
-                                          }}>
-                                              <option value="">Select Parent Category</option>
-                                              {i?.map((cat:any) => {
-                                                  return (
-                                                      <option  value={cat.id} key={cat.id}>
-                                                          {cat.name}
-                                                      </option>
-                                                  )
-                                              })}
-                                          </select>
-                              )
-                          })}
+
+
 
 
               {loading ? (
