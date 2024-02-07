@@ -2,6 +2,7 @@ import React from 'react'
 
 
 function Pagination({ totalPages,  currentPage, setCurrentPage }) {
+    
     const pages = Array.from({ length: totalPages }, (_, index) => index + 1);
     
     return (

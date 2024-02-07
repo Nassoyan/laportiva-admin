@@ -53,7 +53,6 @@ const CreateRelations: React.FC = () => {
     const handleSelectChange = (newItem) => {
 
         if(!payload.id) {
-            console.log("empty case -> ", payload);
             setPayload({ id: newItem.id, name: newItem.name });
             return;
         }
@@ -108,7 +107,7 @@ const CreateRelations: React.FC = () => {
         },
         body: JSON.stringify(payload),
     })
-    .then(res => res.ok && navigate("/category")) 
+    .then(res => res.ok && navigate("/relation")) 
     .catch(error => {
         console.error('Error:', error);
     });

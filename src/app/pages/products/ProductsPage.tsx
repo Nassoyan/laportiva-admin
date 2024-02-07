@@ -27,6 +27,10 @@ const ProductsPage: React.FC = () => {
     const [data, setData] = useState<Products[]>([])
     const [brands, setBrands] = useState<Brands[]>([]);
     const [catData, setCatData] = useState<any>([]);
+    const [orderId, setOrderId] = useState<string>('asc'); 
+
+    
+    
 
     const daterangepickerButtonClass = config.app?.toolbar?.fixed?.desktop
         ? 'btn-light'
@@ -54,9 +58,11 @@ const ProductsPage: React.FC = () => {
       if(selectedCategories.length) {
         url.searchParams.append("categories", selectedCategories.join(","))
       }
+      if(orderId) {
+        url.searchParams.append("order_id", orderId)
+      }
       return fetch(url.toString())
     }
-    console.log(selectedCategories, "selectedCategories");
     
 
     useEffect(() => {
@@ -74,10 +80,38 @@ const ProductsPage: React.FC = () => {
     }, [])
 
     useEffect(() => {
+      const handle = setTimeout(() => {
+        if(searchValue !== null) {
+            getProductsData()
+            .then(req => req.json())
+            .then((res) => {
+              if(currentPage > res.totalPages) { 
+                setCurrentPage((res.totalPages - res.totalPages) + 1)
+                setTotalPages(res.totalPages)
+                setData(res.products);
+              } else {
+                setTotalPages(res.totalPages);
+                setData(res.products);
+                setCurrentPage(res.currentPage);
+              }
+          })
+          .catch(error => {
+          console.error(error);
+          });
+        }
+    }, 600);
+  
+    return () => {
+      clearTimeout(handle);
+    };
+  }, [searchValue]);
+
+    useEffect(() => {
       getProductsData()
         .then(req => req.json())
         .then((res) => {
           setLoading(true)
+          
           if(currentPage > res.totalPages){
             setCurrentPage((res.totalPages - res.totalPages) + 1)
             setTotalPages(res.totalPages)
@@ -87,9 +121,14 @@ const ProductsPage: React.FC = () => {
             setTotalPages(res.totalPages)
             setData(res.products);
           }
-          // setCurrentPage(res.currentPage)
         });
-    }, [currentPage, brand, selectedCategories])
+     }, [currentPage, brand, selectedCategories, orderId])
+
+
+    const toggleOrder = () => {
+      const newOrder = orderId === 'asc' ? 'desc' : 'asc';
+      setOrderId(newOrder);
+     };
 
     
     const removeProductCallback = useCallback(
@@ -112,41 +151,19 @@ const ProductsPage: React.FC = () => {
       setSearchValue(e.target.value);
     }
 
-      useEffect(() => {
-        const handle = setTimeout(() => {
-          if(searchValue !== null) {
-              getProductsData()
-              .then(req => req.json())
-              .then((res) => {
-                if(currentPage > res.totalPages) { 
-                  setCurrentPage((res.totalPages - res.totalPages) + 1)
-                  setTotalPages(res.totalPages)
-                  setData(res.products);
-                } else {
-                  setTotalPages(res.totalPages);
-                  setData(res.products);
-                  setCurrentPage(res.currentPage);
-                }
-            })
-            .catch(error => {
-            console.error(error);
-            });
-          }
-      }, 1000);
-    
-      return () => {
-        clearTimeout(handle);
-      };
-    }, [searchValue]);
-
-    function handleCategoryClick(id:number,index:number) {
+     function handleCategoryClick(id:number,index:number) {
+      
       setSelectedCategories((prevs:any) => {
           if (index <= prevs.length) {
               prevs[index-1] = id;
               return prevs.slice(0, index);
           }
+          console.log(prevs, "-> prevs");
+          
         return [...prevs, id].filter(Boolean)
       })
+      console.log(selectedCategories, "-> selectedCategories");
+      
       
       let newCategoryArray:any[0] = [...catData];
 
@@ -161,18 +178,13 @@ const ProductsPage: React.FC = () => {
               newCategoryArray[index]=[...res]
               res.length ?  setCatData(newCategoryArray.slice(0,index+1)) : setCatData(newCategoryArray.slice(0, index));
           }
-    )
-        
+        )
         .catch((error) => {
           console.error("Error fetching subcategories:", error);
         });
-          
         }
-  }
+    }
 
- 
-
-    
   return (
     <div className='products-table'>
       <div className='table-responsive'>
@@ -218,6 +230,16 @@ const ProductsPage: React.FC = () => {
                             Filter By Category
                         </a>
                         <Dropdown1 catData={catData} handleCategoryClick={handleCategoryClick} />
+                    </div>
+                    <div className='order'>
+                    <a
+                      href='#'
+                      onClick={toggleOrder}
+                      className={clsx('btn btn-sm btn-flex fw-bold ', daterangepickerButtonClass)}
+                    >
+                    <span>&darr;&uarr;</span>
+                     Change Order
+                  </a>
                     </div>
                 </div>
 
@@ -279,8 +301,8 @@ const ProductsPage: React.FC = () => {
               
         </div>
           <Pagination 
-          currentPage={currentPage}
-          setCurrentPage={setCurrentPage}
+            currentPage={currentPage}
+            setCurrentPage={setCurrentPage}
             totalPages={totalPages}
            />
     </div>

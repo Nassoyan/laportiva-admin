@@ -16,3 +16,32 @@
         }
     }
 }
+
+.order {
+    cursor: pointer;
+    margin-left: 5px;
+}
+
+.edit_product_image_box {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    .edit_product_imgbtn {
+        background-color: white;
+        color: black;
+        border: 1px solid black;
+        border-radius: 5px;
+        padding: 3px;
+        max-width: 70px;
+        
+    }
+    .edit_product_image_closebtn {
+        z-index: 99;
+        position: absolute;
+        color: lightgreen;
+        top: 0;
+        left: 3px;
+        cursor: pointer;
+    }
+}

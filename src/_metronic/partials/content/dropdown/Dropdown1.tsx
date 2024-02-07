@@ -2,6 +2,8 @@
 import React from "react";
 
 export function Dropdown1({ catData, handleCategoryClick }) {
+    console.log(catData, "-> catDataaa");
+    
   return (
     <div className='menu menu-sub menu-sub-dropdown w-250px w-md-300px' data-kt-menu='true'>
       <div className='px-7 py-5'>

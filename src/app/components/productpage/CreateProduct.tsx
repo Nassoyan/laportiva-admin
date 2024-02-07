@@ -17,12 +17,15 @@ const CreateProduct: React.FC = () => {
   const [brandData, setBrandData] = useState<Brands[]>();
   const [catData, setCatData] = useState<any>([]);
   const [selectedCategories, setSelectedCategories] = useState<(number | null)[]>([]);
-console.log(selectedCategories, "selectedCategories");
 
   const URL = process.env.REACT_APP_BASE_URL;
 
     const [inputText, setInputText] = useState({
         name: "",
+        name_ru: "",
+        name_en: "",
+        outer_carton:"",
+        inner_carton:"",
         price: "",
         artikul: "",
         code: "",
@@ -54,7 +57,6 @@ console.log(selectedCategories, "selectedCategories");
          .then((res) => res.json())
           .then((res) => setCatData([res]))
       }, [])
-console.log("parentData ->", catData);
 
       function handleCategoryClick(id:number,index:number) {
         setSelectedCategories((prevs:any) => {
@@ -98,37 +100,43 @@ console.log("parentData ->", catData);
             [name]: value,
           }));
         }
+        console.log(inputText.product_images, "-> product_images");
+        
       }
 
       async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
-    e.preventDefault();
+          e.preventDefault();
 
-    const formData = new FormData();
-    formData.append("name", inputText.name);
-    formData.append("price", inputText.price);
-    formData.append("artikul", inputText.artikul);
-    formData.append("code", inputText.code);
-    formData.append("brand_id", inputText.brand_id);
-    formData.append("product_images", inputText.product_images);
+          const formData = new FormData();
+          formData.append("name", inputText.name);
+          formData.append("name_ru", inputText.name_ru);
+          formData.append("name_en", inputText.name_en);
+          formData.append("outer_carton", inputText.outer_carton);
+          formData.append("inner_carton", inputText.inner_carton);
+          formData.append("price", inputText.price);
+          formData.append("artikul", inputText.artikul);
+          formData.append("code", inputText.code);
+          formData.append("brand_id", inputText.brand_id);
+          formData.append("product_images", inputText.product_images);
 
-    const categoryIdsJson = JSON.stringify(selectedCategories.filter(id => id !== null));
-    formData.append("category_ids", categoryIdsJson);
+          const categoryIdsJson = JSON.stringify(selectedCategories.filter(id => id !== null));
+          formData.append("category_ids", categoryIdsJson);
 
-    try {
-        const response = await fetch(`${URL}/products`, {
-            method: "POST",
-            body: formData, 
-        });
+          try {
+              const response = await fetch(`${URL}/products`, {
+                  method: "POST",
+                  body: formData, 
+              });
 
-        if (response.ok) {
-            navigate("/products");
-        } else {
-            console.error('Server error:', response.status);
-        }
-    } catch (err) {
-        console.error('Network error:', err);
-    }
-}
+              if (response.ok) {
+                  navigate("/products");
+              } else {
+                  console.error('Server error:', response.status);
+              }
+          } catch (err) {
+              console.error('Network error:', err);
+          }
+      }
 
 
     return (
@@ -144,6 +152,26 @@ console.log("parentData ->", catData);
                 <div className="form-group">
                   <label>Product Name*</label>
                   <input required name="name" value={inputText.name} onChange={handleChange} type="text" className="form-control"  placeholder="Product Name"/>
+                </div>
+
+                <div className="form-group">
+                  <label> Ru Name*</label>
+                  <input required name="name_ru" value={inputText.name_ru} onChange={handleChange} type="text" className="form-control"  placeholder="Product RU Name"/>
+                </div>
+
+                <div className="form-group">
+                  <label> EN Name*</label>
+                  <input required name="name_en" value={inputText.name_en} onChange={handleChange} type="text" className="form-control"  placeholder="Product EN Name"/>
+                </div>
+
+                <div className="form-group">
+                  <label> How many sets in Outer Carton*</label>
+                  <input required name="outer_carton" value={inputText.outer_carton} onChange={handleChange} type="text" className="form-control"  placeholder="Type how many sets are in outer Carton"/>
+                </div>
+
+                <div className="form-group">
+                  <label> How many sets in inner  Carton*</label>
+                  <input required name="inner_carton" value={inputText.inner_carton} onChange={handleChange} type="text" className="form-control"  placeholder="Type how many sets are in inner Carton"/>
                 </div>
 
                 <div className="form-group">

@@ -14,7 +14,6 @@ function SubCategory({subCatData}) {
     });
 }
 
-console.log(secondSubCatData, "secondSubCatData");
 
 
   return (
@@ -22,7 +21,6 @@ console.log(secondSubCatData, "secondSubCatData");
     {subCatData.length > 0 ? (
       <select
       onChange={(e:any) => {
-        console.log(e.target.value, "valllll");
         
         handleSecondCategoryClick(e.target.value)
       }}
