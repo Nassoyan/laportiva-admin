@@ -2,7 +2,6 @@
 import React from "react";
 
 export function Dropdown1({ catData, handleCategoryClick }) {
-    console.log(catData, "-> catDataaa");
     
   return (
     <div className='menu menu-sub menu-sub-dropdown w-250px w-md-300px' data-kt-menu='true'>
@@ -16,11 +15,13 @@ export function Dropdown1({ catData, handleCategoryClick }) {
         <div className='mb-10'>
             {catData.map((i,index)=>{
                 return(
-                    <div className="d-flex position-relative my-1">
+                    <div key={i.id} className="d-flex position-relative my-1">
                         <div className='align-items-center position-relative my-1'>
                             <select className='form-select form-select-solid me-2'
                                     style={{ marginLeft: '5px', backgroundColor:"#f3f3f3", cursor:"pointer"}}
                                     onChange={(e:any) => {
+                                        console.log(index, "-> this is index in dropdown component");
+                                        
                                         handleCategoryClick(e.target.value,index+1)
                                     }}>
                                 {index === 0 ? <option value="">Select Parent Category</option> :

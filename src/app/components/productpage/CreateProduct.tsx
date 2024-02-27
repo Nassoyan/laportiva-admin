@@ -30,8 +30,10 @@ const CreateProduct: React.FC = () => {
         artikul: "",
         code: "",
         brand_id: "Select Brand",
+        country:"",
         product_images: "", 
       });
+      const[product_Images2, setProduct_image2] = useState("")
       const [btn, setBtn] = useState(true);
       const navigate = useNavigate()
     
@@ -85,22 +87,32 @@ const CreateProduct: React.FC = () => {
           }
     }
 
+      function handleChangeSecondImage(e: React.ChangeEvent<HTMLInputElement> | any) {
+        console.log(e.target.files[0], "-> 2 image");
+        
+        setProduct_image2(e.target.files[0])
+      }
+
     
       function handleChange(e: React.ChangeEvent<HTMLInputElement> | any) {
         const { value, name } = e.target;
     
         if (e.target?.files) {
+          console.log(e.target.files, "-> etargetfiles")
           setInputText((prev: any) => ({
             ...prev,
-            product_images: e.target.files[0], 
+            product_images: e.target.files[0],
+            product_images2: product_Images2,
           }));
+          
         } else {
           setInputText((prev: any) => ({
             ...prev,
             [name]: value,
           }));
         }
-        console.log(inputText.product_images, "-> product_images");
+        console.log(inputText.product_images,  "handleChange 1 image");
+        
         
       }
 
@@ -117,10 +129,14 @@ const CreateProduct: React.FC = () => {
           formData.append("artikul", inputText.artikul);
           formData.append("code", inputText.code);
           formData.append("brand_id", inputText.brand_id);
+          formData.append("country", inputText.country);
           formData.append("product_images", inputText.product_images);
+          formData.append("product_images", product_Images2);
 
           const categoryIdsJson = JSON.stringify(selectedCategories.filter(id => id !== null));
           formData.append("category_ids", categoryIdsJson);
+          console.log(inputText.product_images,  "handleSubmit 1 image");
+          console.log(product_Images2, "handleSubmit 2 image");
 
           try {
               const response = await fetch(`${URL}/products`, {
@@ -200,6 +216,11 @@ const CreateProduct: React.FC = () => {
                     })}
                   </select>
                 </div>
+
+                <div className="form-group">
+                  <label>Country</label>
+                  <input required name="country" value={inputText.country} onChange={handleChange} type="text" className="form-control"  placeholder="Product Country"/>
+                </div>
                 
                 <div className="form-group">
                   <label>Category*</label>
@@ -230,6 +251,11 @@ const CreateProduct: React.FC = () => {
                 <div className="form-group">
                   <label>Product Image*</label>
                   <input name="product_images"  onChange={handleChange} type="file" className="form-control" />
+                </div>
+
+                <div className="form-group">
+                  <label>Product Image2*</label>
+                  <input name="product_Images2"  onChange={handleChangeSecondImage} type="file" className="form-control" />
                 </div>
                 <button disabled={btn} style={buttonStyle} type="submit" className="btn btn-primary">Save</button>
                 </form>

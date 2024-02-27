@@ -152,17 +152,20 @@ const ProductsPage: React.FC = () => {
     }
 
      function handleCategoryClick(id:number,index:number) {
+       console.log(id , index, "-> id and index of selected category");
+       
       
       setSelectedCategories((prevs:any) => {
+        console.log(prevs,"-> prevs");
+        
           if (index <= prevs.length) {
               prevs[index-1] = id;
               return prevs.slice(0, index);
           }
-          console.log(prevs, "-> prevs");
           
         return [...prevs, id].filter(Boolean)
       })
-      console.log(selectedCategories, "-> selectedCategories");
+      console.log(selectedCategories, "-> selectedCategories inside function");
       
       
       let newCategoryArray:any[0] = [...catData];
@@ -184,6 +187,8 @@ const ProductsPage: React.FC = () => {
         });
         }
     }
+
+
 
   return (
     <div className='products-table'>

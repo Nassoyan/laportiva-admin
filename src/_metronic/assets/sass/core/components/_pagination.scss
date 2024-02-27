@@ -8,6 +8,12 @@
   justify-content: center;
   margin: 0;
 
+  .page-item { 
+    .page-link {
+      cursor: pointer;
+    }
+  }
+
   // Pagination circle
   &.pagination-circle {
     .page-link {
@@ -22,6 +28,7 @@
     }
 
     .page-item {
+      cursor: pointer;
       &:hover:not(.disabled),
       &.active {
         .page-link {

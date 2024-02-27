@@ -49,8 +49,6 @@ export default function EditProduct(): JSX.Element {
 
         .then(res => res.json())
         .then((res) => {
-            console.log(res, "ressss");
-            
             setInputValues({
                 name: res.name,
                 name_ru: res.name_ru,
@@ -69,8 +67,6 @@ export default function EditProduct(): JSX.Element {
   }, [id]);
 
   function handleChange(e) {
-    // console.log(e.target.files[0], "e.target");
-    
       setBtn(false)
       const{value, name} = e.target;
       if (e.target?.files) {
@@ -84,8 +80,6 @@ export default function EditProduct(): JSX.Element {
           [name]: value,
         }));
       }
-      console.log(inputValues, "-> inputValues");
-      
   }
 
   // async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
