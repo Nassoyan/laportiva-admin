@@ -1,28 +1,25 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
-import {useState} from 'react'
+import {useEffect, useState} from 'react'
 import * as Yup from 'yup'
 import clsx from 'clsx'
-import {Link} from 'react-router-dom'
 import {useFormik} from 'formik'
-import {getUserByToken, login} from '../core/_requests'
-import {toAbsoluteUrl} from '../../../../_metronic/helpers'
 import {useAuth} from '../core/Auth'
+import Cookies from 'js-cookie'
+
 
 const loginSchema = Yup.object().shape({
   email: Yup.string()
     .email('Wrong email format')
-    .min(3, 'Minimum 3 symbols')
     .max(50, 'Maximum 50 symbols')
     .required('Email is required'),
   password: Yup.string()
-    .min(3, 'Minimum 3 symbols')
     .max(50, 'Maximum 50 symbols')
     .required('Password is required'),
 })
 
 const initialValues = {
-  email: 'admin@demo.com',
-  password: 'demo',
+  email: '',
+  password: '',
 }
 
 /*
@@ -32,28 +29,45 @@ const initialValues = {
 */
 
 export function Login() {
-  const [loading, setLoading] = useState(false)
-  const {saveAuth, setCurrentUser} = useAuth()
+  const [loading, setLoading] = useState(false);
+  const URL = process.env.REACT_APP_BASE_URL;
+  const {setCurrentUser} = useAuth();
+  const [error, setError] = useState("")
 
+  
   const formik = useFormik({
     initialValues,
     validationSchema: loginSchema,
-    onSubmit: async (values, {setStatus, setSubmitting}) => {
-      setLoading(true)
-      try {
-        const {data: auth} = await login(values.email, values.password)
-        saveAuth(auth)
-        const {data: user} = await getUserByToken(auth.api_token)
-        setCurrentUser(user)
-      } catch (error) {
-        console.error(error)
-        saveAuth(undefined)
-        setStatus('The login details are incorrect')
-        setSubmitting(false)
-        setLoading(false)
-      }
+    onSubmit: (values) => {
+      setLoading(true);
+      
+      fetch(`${URL}/auth/login`, {
+        method: "post",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(values)
+      })
+      .then(response => {
+        
+        if (!response.ok) {
+          setError("Invalid e-mail or password")
+          setLoading(false)
+          throw new Error(`HTTP error! Status: ${response} glgl`);
+        }
+        return response.json();
+      })
+      .then(data => {
+        Cookies.set('authorized', data.token);
+        setCurrentUser(data.token);
+        setLoading(false);
+      })
+      .catch(error => {
+        console.error(error);
+        setLoading(false);
+      });
     },
-  })
+  });
 
   return (
     <form
@@ -65,58 +79,12 @@ export function Login() {
       {/* begin::Heading */}
       <div className='text-center mb-11'>
         <h1 className='text-dark fw-bolder mb-3'>Sign In</h1>
-        <div className='text-gray-500 fw-semibold fs-6'>Your Social Campaigns</div>
       </div>
       {/* begin::Heading */}
 
-      {/* begin::Login options */}
-      <div className='row g-3 mb-9'>
-        {/* begin::Col */}
-        <div className='col-md-6'>
-          {/* begin::Google link */}
-          <a
-            href='#'
-            className='btn btn-flex btn-outline btn-text-gray-700 btn-active-color-primary bg-state-light flex-center text-nowrap w-100'
-          >
-            <img
-              alt='Logo'
-              src={toAbsoluteUrl('/media/svg/brand-logos/google-icon.svg')}
-              className='h-15px me-3'
-            />
-            Sign in with Google
-          </a>
-          {/* end::Google link */}
-        </div>
-        {/* end::Col */}
-
-        {/* begin::Col */}
-        <div className='col-md-6'>
-          {/* begin::Google link */}
-          <a
-            href='#'
-            className='btn btn-flex btn-outline btn-text-gray-700 btn-active-color-primary bg-state-light flex-center text-nowrap w-100'
-          >
-            <img
-              alt='Logo'
-              src={toAbsoluteUrl('/media/svg/brand-logos/apple-black.svg')}
-              className='theme-light-show h-15px me-3'
-            />
-            <img
-              alt='Logo'
-              src={toAbsoluteUrl('/media/svg/brand-logos/apple-black-dark.svg')}
-              className='theme-dark-show h-15px me-3'
-            />
-            Sign in with Apple
-          </a>
-          {/* end::Google link */}
-        </div>
-        {/* end::Col */}
-      </div>
-      {/* end::Login options */}
-
       {/* begin::Separator */}
       <div className='separator separator-content my-14'>
-        <span className='w-125px text-gray-500 fw-semibold fs-7'>Or with email</span>
+        <span className='w-125px text-gray-500 fw-semibold fs-7'>Laportiva Admin Page</span>
       </div>
       {/* end::Separator */}
 
@@ -127,7 +95,7 @@ export function Login() {
       ) : (
         <div className='mb-10 bg-light-info p-8 rounded'>
           <div className='text-info'>
-            Use account <strong>admin@demo.com</strong> and password <strong>demo</strong> to
+            Use account <strong>email</strong> and password <strong>****</strong> to
             continue.
           </div>
         </div>
@@ -138,6 +106,7 @@ export function Login() {
         <label className='form-label fs-6 fw-bolder text-dark'>Email</label>
         <input
           placeholder='Email'
+          autoComplete='off'
           {...formik.getFieldProps('email')}
           className={clsx(
             'form-control bg-transparent',
@@ -148,7 +117,6 @@ export function Login() {
           )}
           type='email'
           name='email'
-          autoComplete='off'
         />
         {formik.touched.email && formik.errors.email && (
           <div className='fv-plugins-message-container'>
@@ -163,6 +131,7 @@ export function Login() {
         <label className='form-label fw-bolder text-dark fs-6 mb-0'>Password</label>
         <input
           type='password'
+          placeholder='password'
           autoComplete='off'
           {...formik.getFieldProps('password')}
           className={clsx(
@@ -182,18 +151,13 @@ export function Login() {
             </div>
           </div>
         )}
+        <p style={{color:"red", fontSize:"16px"}}>{error && error}</p>
       </div>
       {/* end::Form group */}
 
       {/* begin::Wrapper */}
       <div className='d-flex flex-stack flex-wrap gap-3 fs-base fw-semibold mb-8'>
-        <div />
 
-        {/* begin::Link */}
-        <Link to='/auth/forgot-password' className='link-primary'>
-          Forgot Password ?
-        </Link>
-        {/* end::Link */}
       </div>
       {/* end::Wrapper */}
 
@@ -203,7 +167,6 @@ export function Login() {
           type='submit'
           id='kt_sign_in_submit'
           className='btn btn-primary'
-          disabled={formik.isSubmitting || !formik.isValid}
         >
           {!loading && <span className='indicator-label'>Continue</span>}
           {loading && (
@@ -215,13 +178,6 @@ export function Login() {
         </button>
       </div>
       {/* end::Action */}
-
-      <div className='text-gray-500 text-center fw-semibold fs-6'>
-        Not a Member yet?{' '}
-        <Link to='/auth/registration' className='link-primary'>
-          Sign up
-        </Link>
-      </div>
     </form>
   )
 }

@@ -1,0 +1,23 @@
+.app-sidebar-menu {
+
+    .app-sidebar-wrapper {
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between !important;
+        height: 100%;
+
+        .logout_container {
+            padding-left: 24px;
+            padding-bottom: 30px;
+            >span {
+                cursor: pointer;
+                font-size: 17px;
+                font-weight: bold;
+                color: #7f8194;
+                &:hover {
+                    opacity: .7;
+                }
+            }
+        }
+    }
+}

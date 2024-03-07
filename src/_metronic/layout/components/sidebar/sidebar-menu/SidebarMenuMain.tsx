@@ -34,6 +34,12 @@ const SidebarMenuMain = () => {
         title="Relation"
         fontIcon='bi-app-indicator'
       />
+      <SidebarMenuItem
+        to='/user'
+        icon='element-6'
+        title="Users"
+        fontIcon='bi-app-indicator'
+      />
     </>
   )
 }

@@ -5,12 +5,13 @@
  * components (e.g: `src/app/modules/Auth/pages/AuthPage`, `src/app/BasePage`).
  */
 
-import {FC} from 'react'
+import {FC, useEffect} from 'react'
 import {Routes, Route, BrowserRouter, Navigate} from 'react-router-dom'
 import {PrivateRoutes} from './PrivateRoutes'
 import {ErrorsPage} from '../modules/errors/ErrorsPage'
 import {Logout, AuthPage, useAuth} from '../modules/auth'
 import {App} from '../App'
+import Cookies from "js-cookie"
 
 /**
  * Base URL of the website.
@@ -20,7 +21,12 @@ import {App} from '../App'
 const {PUBLIC_URL} = process.env
 
 const AppRoutes: FC = () => {
-  const {currentUser} = useAuth()
+  const {currentUser, setCurrentUser} = useAuth()
+  console.log(currentUser, "--> currentUser in AppRoutes component");
+  useEffect(() => {
+    setCurrentUser(Cookies.get("authorized"))
+  }, [Cookies])
+  
   return (
     <BrowserRouter basename={PUBLIC_URL}>
       <Routes>

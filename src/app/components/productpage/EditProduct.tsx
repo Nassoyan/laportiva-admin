@@ -82,30 +82,6 @@ export default function EditProduct(): JSX.Element {
       }
   }
 
-  // async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
-
-  //   const { name, name_ru, name_en, outer_carton, inner_carton, price, artikul, code, brand_id, product_images} = inputValues
-      
-
-  //   e.preventDefault();
-  //   console.log(inputValues);
-    
-  //   try {
-  //     const response = await fetch(`${URL}/products/${id}`, {
-  //       method: "PUT",
-  //       headers: {
-  //         "Content-Type": "application/json",
-  //       },
-  //       body: JSON.stringify({name, name_ru, name_en, outer_carton, inner_carton, price, artikul, code, brand_id, product_images}),
-  //     });
-  
-  //     if (response.ok) {
-  //       navigate("/products")
-  //     }
-  //   } catch (error) {
-  //     console.error("Error:", error);
-  //   }
-  // }
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();

@@ -34,18 +34,11 @@ export function HeaderWrapper() {
               >
                 <KTIcon iconName='abstract-14' className=' fs-1' />
               </div>
-              <div className='d-flex align-items-center flex-grow-1 flex-lg-grow-0'>
-                {/* <Link to='/dashboard' className='d-lg-none'> */}
-                  <img
-                    alt='Logo'
-                    src={toAbsoluteUrl('/media/logos/default-small.svg')}
-                    className='h-30px'
-                  />
-                {/* </Link> */}
-              </div>
             </div>
           </>
         )}
+                  <h2 style={{display:"flex", alignItems:"center"}}> Laportiva Admin</h2>
+
 
         {!(config.layoutType === 'dark-sidebar' || config.layoutType === 'light-sidebar') && (
           <div className='d-flex align-items-center flex-grow-1 flex-lg-grow-0 me-lg-15'>

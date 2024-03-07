@@ -35,21 +35,21 @@
     flex-shrink: 0;
   }
 
-  .app-sidebar-menu {
-    .menu {
-      // Root
-      > .menu-item {
-        margin-left: 0.115rem;
+//   .app-sidebar-menu {
+//     .menu {
+//       // Root
+//       > .menu-item {
+//         margin-left: 0.115rem;
 
-        > .menu-link {
-          > .menu-title {
-            font-weight: $font-weight-bold;
-            font-size: 1.1rem;
-          }
-        }
-      }
-    }
-  }
+//         > .menu-link {
+//           > .menu-title {
+//             font-weight: $font-weight-bold;
+//             font-size: 1.1rem;
+//           }
+//         }
+//       }
+//     }
+//   }
 }
 
 // Tablet & mobile modes

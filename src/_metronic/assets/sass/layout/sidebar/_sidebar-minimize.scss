@@ -31,19 +31,19 @@
     width: var(--#{$prefix}app-sidebar-width-actual);
   }
 
-  .app-sidebar-menu {
-    .menu-content,
-    .menu-title {
-      opacity: 0;
-      @include app-layout-transition(opacity);
-    }
+  // .app-sidebar-menu {
+  //   .menu-content,
+  //   .menu-title {
+  //     opacity: 0;
+  //     @include app-layout-transition(opacity);
+  //   }
 
-    .menu-item.show > .menu-sub {
-      height: 0;
-      overflow: hidden;
-      @include app-layout-transition(height);
-    }
-  }
+  //   .menu-item.show > .menu-sub {
+  //     height: 0;
+  //     overflow: hidden;
+  //     @include app-layout-transition(height);
+  //   }
+  // }
 
   .app-sidebar-footer {
     .btn-custom {

@@ -1,6 +1,13 @@
 import {SidebarMenuMain} from './SidebarMenuMain'
+import "../../../../../styles/sidebar/sidebar-auth.scss"
+import {useAuth} from '../../../../../app/modules/auth/'
+import Cookies from "js-cookie"
+
 
 const SidebarMenu = () => {
+
+  const {setCurrentUser} = useAuth()
+  
   return (
     <div className='app-sidebar-menu overflow-hidden flex-column-fluid'>
       <div
@@ -22,7 +29,16 @@ const SidebarMenu = () => {
         >
           <SidebarMenuMain />
         </div>
+
+        <div className='logout_container'>
+          <span onClick={() => {
+            Cookies.remove("authorized")
+            document.location.reload()
+            setCurrentUser(undefined)
+          }}>Log out</span>
+        </div>
       </div>
+
     </div>
   )
 }

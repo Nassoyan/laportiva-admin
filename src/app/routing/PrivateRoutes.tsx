@@ -16,6 +16,8 @@ import CategoryPage from '../pages/category/CategoryPage'
 import { CreateCategory } from '../components/category/CreateCategory'
 import RelationPage from '../pages/relation/RelationPage'
 import { CreateRelations } from '../components/relations/CreateRelations'
+import UserPage from '../pages/users/UserPage'
+import { CreateUser } from '../components/userPage/CreateUser'
 
 const PrivateRoutes = () => {
 
@@ -25,13 +27,13 @@ const PrivateRoutes = () => {
         {/* Redirect to Dashboard after success login/registartion */}
         <Route path='auth/*' element={<Navigate to='/products' />} />
         {/* Pages */}
-        <Route path='products' element={<ProductsPage />} />
-        <Route path='products/create' element={<CreateProduct />} />
-        <Route path='products/edit/:id' element={<EditProduct />} />
+         <Route path='products' element={<ProductsPage />} />
+         <Route path='products/create' element={<CreateProduct />} />
+         <Route path='products/edit/:id' element={<EditProduct />} />
 
 
 
-        <Route path='brands' element={<BrandsPage />} />
+         <Route path='brands' element={<BrandsPage />} />
          <Route path='brands/create' element={<CreateBrand />} />
          <Route path='brands/edit/:id' element={<EditBrand />} />
 
@@ -42,6 +44,10 @@ const PrivateRoutes = () => {
 
          <Route path='relation' element={<RelationPage />} />
          <Route path='relation/create' element={<CreateRelations />} />
+
+
+         <Route path='user' element={<UserPage />} />
+         <Route path='user/create' element={<CreateUser />} />
 
        
         <Route path='*' element={<Navigate to='/error/404' />} />
